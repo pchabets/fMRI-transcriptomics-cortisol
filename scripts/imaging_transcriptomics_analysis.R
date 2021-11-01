@@ -193,8 +193,8 @@ dfT <- data.frame("probe_id" = character(), "p_value" = numeric(), "regulation" 
 for(i in c(1:ncol(A))){
   #t <- t.test(A[,i], B[,i]) ## Welch t-test is used by default.
   t <- wilcox.test(A[,i], B[,i])
-  r <- 1 #1 means upregulated
-  if(mean(A[,i]) < mean(B[,i])){ r <- 0} #0 means downregulated
+  r <- 1 #1 means upregulated (or to be precise: on average higher expressed)
+  if(mean(A[,i]) < mean(B[,i])){ r <- 0} #0 means downregulated (or to be precies: on average lower expressed)
   dfT <- rbind(dfT, c(as.numeric(colnames(A)[i]), t$p.value, as.numeric(r)), stringsAsFactors = FALSE)
   colnames(dfT) <- c("probe_id", "p_value", "regulation")
 }
@@ -237,6 +237,7 @@ genesBonf$probe_id <- as.numeric(genesBonf$probe_id)
 genesBonf <- inner_join(genesBonf, probeInfo)
 genesBonf <- genesBonf %>% dplyr::select(gene_symbol, gene_name, regulation, entrez_id, p_value, BH_adjusted_p_value, bonferroni_p_value, everything())
 
+# write_csv(genesALL, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/Wilcox_RankTest/limma+SRS_Normalized/R_ALL_genes_BH_4A&4B(RNAseq_signal=0.5_withinSample=TRUE).csv")
 # write.csv2(genesBH, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/Wilcox_RankTest/limma+SRS_Normalized/R_308genes_BH_4A&4B(RNAseq_signal=0.5_withinSample=TRUE).csv")
 
 ####################################################################################################
