@@ -10,6 +10,9 @@ path_DEG <- file.choose() #choose outputted differential gene expression list
 DEG <- read.csv2(path_DEG, stringsAsFactors = FALSE); DEG <- DEG[,-1]
 DEG_higher <- DEG %>% filter(regulation == "Up") #filter only genes with differential higher expression 
 
+### for lower DEGs, run with:
+# DEG_lower <- DEG %>% filter(regulation == "Down")
+
 ##GO analysis using RDAVID
 getIdTypes(david) #available gene ID types --> "ENTREZ_GENE_ID"
 DEG_entrezIDs <- as.character(DEG_higher$entrez_id) #foreground list
@@ -59,10 +62,10 @@ FuncAnnotChart <- getFunctionalAnnotationChart(david)
 # Print functional annotation chart to file.
 getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotChart_GO_ALL_noBackground.csv")
 
-# Get functional annotation clustering (limited to 3000 genes).
+# Get functional annotation clustering .
 FuncAnnotClust <- getClusterReport(david)
 
-# Print functional annotation clustering to file (limited to 3000 genes).
+# Print functional annotation clustering to file.
 getClusterReportFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotCLUSTER_GO_ALL_noBackground.csv")
 
 #get functional table (for each gene the GO categories)
