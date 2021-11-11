@@ -13,34 +13,34 @@ DS_DEG <- inner_join(DS_all, DEG, by = c("Gene" = "gene_symbol")) %>%
 
 ### metrics for all DEGs
 # Density plot for both up and downregulated genes
-group_means <- plyr::ddply(DS_DEG, "regulation", summarise, grp.mean=mean(Pearson))
+group_medians <- plyr::ddply(DS_DEG, "regulation", summarise, grp.median=median(Pearson))
 ggplot(DS_DEG, aes(x=Pearson, fill=regulation)) +
   geom_density(alpha = 0.1) +
-  geom_vline(data=group_means, aes(xintercept=grp.mean, color=regulation),
+  geom_vline(data=group_medians, aes(xintercept=grp.median, color=regulation),
              linetype="dashed", show.legend = F) +
-  geom_text(data=group_means[1,], aes(color = regulation, x=grp.mean, label=paste0("Mean\n",round(grp.mean,2))), y=0.05, x=0.615, show.legend = F) +
-  geom_text(data=group_means[2,], aes(color = regulation, x=grp.mean, label=paste0("Mean\n",round(grp.mean,2))), y=0.05, x=0.75, show.legend = F) +
+  geom_text(data=group_medians[1,], aes(color = regulation, x=grp.median, label=paste0("median\n",round(grp.median,2))), y=0.05, x=0.615, show.legend = F) +
+  geom_text(data=group_medians[2,], aes(color = regulation, x=grp.median, label=paste0("median\n",round(grp.median,2))), y=0.05, x=0.82, show.legend = F) +
   xlab("Differential Stability") +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank()) +
   scale_fill_discrete(name = "expression") +
-  ggtitle("Density plot of DS values in DEGs", subtitle = paste0("Overall DS mean = ", round(mean(DS_DEG$Pearson),2)))
+  ggtitle("Density plot of DS values in DEGs", subtitle = paste0("Overall DS median = ", round(median(DS_DEG$Pearson),2)))
 
 ### metrics for top 30 DEGS (all bonferroni corrected p < 0.05) 
 # Density plot for both up and downregulated genes
 DS_DEG_top30 <- DS_DEG %>% 
   filter(bonferroni_p_value < 0.05) #top 30 DEGS with DS
-group_means_top30 <- plyr::ddply(DS_DEG_top30, "regulation", summarise, grp.mean=mean(Pearson))
+group_medians_top30 <- plyr::ddply(DS_DEG_top30, "regulation", summarise, grp.median=median(Pearson))
 
 ggplot(DS_DEG_top30, aes(x=Pearson, fill=regulation)) +
   geom_density(alpha = 0.1) +
-  geom_vline(data=group_means_top30, aes(xintercept=grp.mean, color=regulation),
+  geom_vline(data=group_medians_top30, aes(xintercept=grp.median, color=regulation),
              linetype="dashed", show.legend = F) +
-  geom_text(data=group_means_top30[1,], aes(color = regulation, x=grp.mean, label=paste0("Mean\n",round(grp.mean,2))), y=0.05, x=0.81, show.legend = F) +
-  geom_text(data=group_means_top30[2,], aes(color = regulation, x=grp.mean, label=paste0("Mean\n",round(grp.mean,2))), y=0.05, x=0.65, show.legend = F) +
+  geom_text(data=group_medians_top30[1,], aes(color = regulation, x=grp.median, label=paste0("median\n",round(grp.median,2))), y=0.05, x=0.90, show.legend = F) +
+  geom_text(data=group_medians_top30[2,], aes(color = regulation, x=grp.median, label=paste0("median\n",round(grp.median,2))), y=0.05, x=0.65, show.legend = F) +
   xlab("Differential Stability") +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank()) +
   scale_fill_discrete(name = "expression") +
-  ggtitle("Density plot of DS values in 30 FWE corrected DEGs", subtitle = paste0("Overall DS mean = ", round(mean(DS_DEG_top30$Pearson),2)))
+  ggtitle("Density plot of DS values in 30 FWE corrected DEGs", subtitle = paste0("Overall DS median = ", round(median(DS_DEG_top30$Pearson),2)))
 
 ## plot relationship p-value and DF:
 ggscatter(DS_DEG, x = "BH_adjusted_p_value", y = "Pearson",
