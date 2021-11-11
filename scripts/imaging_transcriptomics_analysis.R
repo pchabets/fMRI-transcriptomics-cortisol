@@ -1,6 +1,8 @@
 library(oro.nifti)
 library(neurobase)
 library(dplyr)
+library(readr)
+library(stringr)
 library(plotly)
 library(AnalyzeFMRI)
 library(oce)
@@ -170,8 +172,33 @@ dfJ <- dfJ %>%
 affectedAB <- dfJ; dfJ <- NULL
 unaffectedSamples <- anti_join(samples.coordinates[,c(1:14, 16)], affectedAB[,c(-2, -16)]) #all samples outside Fig4A&B but included in parcellations
 
-##Make 2 df's: A -> selected case samples x GE ; B -> selected control samples x GE
+##make and export table of number of samples per donor in affected and unaffectedSamples
+tableAffected <- affectedAB %>% 
+  mutate(donor = str_split(sample, "_", simplify = TRUE)[,1]) %>% 
+  dplyr::select(donor) %>% 
+  table() %>% 
+  data.frame() %>% 
+  t() %>% 
+  as.data.frame()
 
+tableUnaffected <- unaffectedSamples %>% 
+  mutate(donor = str_split(sample, "_", simplify = TRUE)[,1]) %>% 
+  dplyr::select(donor) %>% 
+  table() %>% 
+  data.frame() %>% 
+  t() %>% 
+  as.data.frame()
+  
+sampleTable <- bind_rows(tableAffected, tableUnaffected)
+colnames(sampleTable) <- sampleTable[1,]
+sampleTable <- sampleTable[c(2,4),] %>% 
+  mutate(area = c("Differentially \nresponsive area", "Control area")) %>% 
+  relocate(area, .before = donor10021) %>% 
+  mutate_at(vars(-area), as.numeric) %>% 
+  mutate(`all donors` = rowSums(.[,-1]))
+# write_csv(sampleTable, "/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/tables/sampleTable.csv")
+
+##Make 2 df's: A -> selected case samples x GE ; B -> selected control samples x GE
 A <- dfGE %>% 
   inner_join(y = (dplyr::select(affectedAB, sample)), by = "sample") %>% 
   dplyr::select(-c(1:2))
