@@ -139,7 +139,7 @@ dup <- all_markers[duplicated(all_markers)] #70 duplicate markers
 
 #remove duplicate markers from list
 entrezlist <- sapply(entrezlist, function(x) {x <- x[!x %in% dup]} )
-sum(sapply(entrezlist, length)) #600 marker genes that are unique in a cell type
+sum(sapply(entrezlist, length)) #603 marker genes that are unique in a cell type
 
 #inspect number of marker genes for each cell type
 table(sapply(entrezlist, length))
@@ -147,6 +147,22 @@ table(sapply(entrezlist, length))
 #only use cell types with at least 5 markers
 entrezlist[sapply(entrezlist, length) < 5] # these celltypes will be dropped
 markerlist5 <- entrezlist[sapply(entrezlist, length) >= 5] # 70 cell types retained
+
+# count total and average number of marker genes in GABAergic and Glutamatergic cell types
+countGenes <- data.frame(celltype = names(sapply(entrezlist, length)), genes = sapply(entrezlist, length)) %>% 
+  pivot_wider(names_from = celltype, values_from = genes)
+
+cat(
+  paste(paste0("Total number of marker genes for GABAergic neurons: ", 
+             (countGenes %>% dplyr::select(`Inh L1-2 PAX6 CDH12`:`Inh L2-5 PVALB SCUBE3`) %>% rowSums())),
+        paste0("Average number of marker genes for GABAergic neurons: ", 
+               (countGenes %>% dplyr::select(`Inh L1-2 PAX6 CDH12`:`Inh L2-5 PVALB SCUBE3`) %>% rowMeans() %>% round(2))),
+        paste0("Total number of marker genes for Glutamatergic neurons: ",
+             (countGenes %>% dplyr::select(`Exc L2 LAMP5 LTK`:`Exc L5-6 FEZF2 EFTUD1P1`) %>% rowSums())),
+        paste0("Average number of marker genes for Glutamatergic neurons: ",
+             (countGenes %>% dplyr::select(`Exc L2 LAMP5 LTK`:`Exc L5-6 FEZF2 EFTUD1P1`) %>% rowMeans() %>% round(2))),
+        sep = "\n")
+)
 
 ###define functions#####################################################################################################
 ########################################################################################################################
