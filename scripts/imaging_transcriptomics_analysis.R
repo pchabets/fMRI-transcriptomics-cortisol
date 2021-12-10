@@ -270,7 +270,7 @@ genesBonf <- genesBonf %>% dplyr::select(gene_symbol, gene_name, regulation, ent
 ####################################################################################################
 ##plotting genes
 ####################################################################################################
-nGenes <- 10  #number of top differentially expressed genes to plot
+nGenes <- 25  #number of top differentially expressed genes to plot
 
 repN <- character() ##making vector of gene names
 for(i in c(1:nGenes)){ # number here is how many genes you want to plot
@@ -306,37 +306,42 @@ boxplotB <- data.frame("case" = c(replicate((nrow(B)*nGenes), "control")), "gene
 boxplot <- rbind(boxplotA, boxplotB)
 boxplot$gene <- factor(boxplot$gene , levels = unique(as.character(boxplot$gene)))
 boxplot <- boxplot %>% 
-  mutate(case = recode(case, control = "control region", mask = "pulsatility affected region")) %>% 
-  dplyr::arrange(-row_number()) #for reversing row order, so it doesn't come up reverse in flipped boxplot.
+  mutate(case = recode(case, control = "control \nregion", mask = "pulsatility \naffected \nregion")) 
+  # dplyr::arrange(-row_number()) #for reversing row order, so it doesn't come up reverse in flipped boxplot.
 
 t <- as.numeric(0.8); for(i in c(1:(nGenes-1))){t <- append(t, (i+0.8))}
 tm <- as.numeric(1.2); for(i in c(1:(nGenes-1))){tm <- append(tm, (i+ 1.2))}
 
-ggplot(data = boxplot, aes(x=gene, y=value)) + 
+plot_vertical <- ggplot(data = boxplot, aes(x=gene, y=value)) + 
   geom_boxplot(aes(fill = case), varwidth = F) +
   scale_fill_brewer(palette="Pastel1") +
-  theme(panel.border = element_blank(), 
-        plot.margin = unit(c(1,8,1,1), "lines"),
+  scale_x_discrete(limits = unique(boxplot$gene)) +
+  ylab("gene expression \n(scaled + normalized)") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 12.5),
+        panel.border = element_blank(), 
+        plot.margin = unit(c(0,0,0,0), "cm"),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "grey"),
+        axis.title = element_text(size = 15),
         axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
+        # axis.title.y = element_blank(),
         strip.text.x = element_blank(),
         strip.text.y = element_blank(),
-        legend.title = element_blank()
-  ) +
-  geom_signif(y_position = replicate(nGenes, 1.05), xmin = t, xmax = tm, annotations = replicate(nGenes, "*"), tip_length = 0.01) +
-  coord_flip()
+        legend.title = element_blank(),
+        legend.spacing = unit(1, "cm"),
+        legend.key.size = unit(1, "cm"),
+        legend.text = element_text(size=12.5),
+        legend.position = "bottom",
+        legend.direction = "horizontal",
+        axis.text.y = element_text(size=12.5)) +
+  geom_signif(y_position = replicate(nGenes, 1.05), xmin = t, xmax = tm, annotations = replicate(nGenes, "*"), tip_length = 0.01)
+  
+plot_vertical
 
-
-#vertical plot
-boxplot$gene <- factor(boxplot$gene, level = rev(levels(boxplot$gene)))
-ggplot(data = boxplot, aes(x=gene, y=value)) + 
-  geom_boxplot(aes(fill = case), varwidth = F) +
-  scale_fill_brewer(palette="Pastel1") +
-  geom_signif(y_position = replicate(nGenes, 1.05), xmin = t, xmax = tm, annotations = replicate(nGenes, ""), tip_length = 0.01) +
-  coord_flip() +
-  ylab("gene expression (scaled + normalized)") +
-  theme(axis.title = element_text(size = 14)) # , face = 'bold'
+# ggsave("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/Paper Bristol/figures/raw outputs/DEG_boxplot.pdf",
+#        plot_vertical,
+#        width = 28,
+#        height = 14,
+#        units = "cm")
 
