@@ -1,10 +1,10 @@
 library(tidyverse)
 library(plotly)
 
-setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/Paper Bristol/added_analysis")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data")
 
 ## read in celltype enrichment for higher and lower DEGs
-cells_high <- read_csv2("data/celltype_enrichment_higherDEGs.csv") %>% 
+cells_high <- read_csv2("celltype_enrichment_higherDEGs.csv") %>% 
   dplyr::rename(celltype = X1, DEG = enriched) %>% 
   mutate(cellgroup = str_replace(celltype, "(?s) .*", "")) %>% 
   mutate(cellgroup = recode(cellgroup, Inh = "GABAergic", 
@@ -14,7 +14,7 @@ cells_high <- read_csv2("data/celltype_enrichment_higherDEGs.csv") %>%
          Micro = "Microglial", 
          Endo = "Endothelial"))
            
-cells_low <- read_csv2("data/celltype_enrichment_lowerDEGs.csv") %>% 
+cells_low <- read_csv2("celltype_enrichment_lowerDEGs.csv") %>% 
   dplyr::rename(celltype = X1, DEG = enriched) %>% 
   mutate(cellgroup = str_replace(celltype, "(?s) .*", "")) %>% 
   mutate(cellgroup = recode(cellgroup, Inh = "GABAergic", 

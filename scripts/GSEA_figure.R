@@ -1,10 +1,10 @@
 library(tidyverse)
 
-setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/Paper Bristol/added_analysis")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data")
 
 # read in GSEA results
-KEGG <- read_csv("data/Table.S3.csv")
-GO <- read_csv("data/Table.S2.csv")
+KEGG <- read_csv("Table.S3.csv")
+GO <- read_csv("Table.S2.csv")
 
 ## clean data for plotting ##
 #KEGG
@@ -90,11 +90,6 @@ plot_BP <- ggplot(data = GO_BP, aes(x = Term, y = `Fold Enrichment`)) +
          axis.title.y = element_text(size=11),
          plot.title = element_text(size=12),
          plot.tag = element_text(size = 14))
-
-# save plots to file
-ggsave("./../figures/raw outputs/Plot_KEGG.pdf", plot_KEGG, width = 16, height = 5.5, units = "cm")
-ggsave("./../figures/raw outputs/Plot_GO_CC.pdf", plot_CC, width = 16, height = 14, units = "cm")
-ggsave("./../figures/raw outputs/Plot_GO_BP.pdf", plot_BP, width = 16, height = 8.5, units = "cm")
 
 
 

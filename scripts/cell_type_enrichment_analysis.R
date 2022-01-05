@@ -8,7 +8,7 @@ library(plyr)
 library(DescTools)
 library(abind)
 
-setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/AHBA/MarkerGenesHumanCortex")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data")
 
 #check if any of the DEG is in selectively expressed marker genes from Hodge 2019 paper
 path_DEG <- file.choose() #select path to output list of differentially expressed genes
@@ -235,7 +235,7 @@ hyper.test.table <- function(l1, l2, random = NULL, unique = FALSE){ # two lists
 listDEG <- list("DEG" = as.character(DEG_higher$entrez_id))
 
 #load in probe ID.  Use reannotated probes.
-probeInfo <- read.csv2("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/AHBA/reannotatedProbes_May2020/Probes_May2020.csv", header = T, stringsAsFactors = FALSE)
+probeInfo <- read.csv2("Probes_May2020.csv", header = T, stringsAsFactors = FALSE)
 probeInfo$X <- NULL
 
 # Cell-type enrichment of DEGs
@@ -250,8 +250,7 @@ t <- t[,colOrder]
 test <- as.data.frame(t)
 test <- as.data.frame(sapply(test, function(x){format(x, digits = 3, scientific = TRUE)}, simplify = "array"))
 test$value <- rownames(t)
-
-#write.csv(test, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[wilcoxon.test]/RNAseqHodge/celltype_enrichment_OR.csv")
+test
 
 # Run cell-type enrichment with hyper.test
 ct_enrichment <- hyper.test.table(listDEG, markerlist5, unique = TRUE) 
@@ -261,6 +260,5 @@ ct_enrichment$enriched <- rows
 
 sig <- function(x, n = 3){ x <- signif(x, n)}
 ct_enrichment$`p-value` <- sapply(ct_enrichment$`p-value`, sig) 
-#write.csv2(ct_enrichment, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[wilcoxon.test]/RNAseqHodge/celltype_enrichment_hypergeometrictest.csv")
-
+ct_enrichment
   

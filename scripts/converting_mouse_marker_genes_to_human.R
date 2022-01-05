@@ -1,9 +1,10 @@
 # Cell-type marker conversion
 library(homologene)
 library(readr)
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data/")
 
 # Read markers. Used Neuroexpresso Version: 1.2
-dir <- "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/neuroExpresso/Markers_Final/CellTypes_NCBIids/All"
+dir <- "neuroExpresso/"
 filenames <- list.files(dir)
 conversion_table <- sapply(filenames, function(f){
   m <- unlist(read.table(paste0(dir, "/", f)))
@@ -12,7 +13,7 @@ conversion_table <- sapply(filenames, function(f){
 names(conversion_table)[names(conversion_table) %in% c("Microglia_activation", "Microglia_deactivation")] <- c("Microglia_activated", "Microglia_deactivated")
 
 #load in probe ID and make function to get entrez_id's. Use reannotated probes.
-probeInfo <- read.csv2("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/AHBA/reannotatedProbes_May2020/reannotatedProbes_May2020.csv", header = T, stringsAsFactors = FALSE)
+probeInfo <- read.csv2("Probes_May2020.csv", header = T, stringsAsFactors = FALSE)
 probeInfo$X <- NULL
 ahba.genes <- function(random = NULL, unique = FALSE){
   genes <- probeInfo$entrez_id
@@ -50,9 +51,7 @@ markerlist <- lapply(conversion_table, function(x) {
 
 # Table with number of markers in mouse and human
 df_size <- data.frame(Celltype = rownames(data.frame(sapply(conversion_table, nrow))), Mouse = data.frame(sapply(conversion_table, nrow))[,1], Human = data.frame(sapply(markerlist, length))[,1])
-
-# Write to file
-write_csv(df_size, file = "/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/supplements/number_of_orthologue_celltype_markers.csv")
+df_size
 
 
 

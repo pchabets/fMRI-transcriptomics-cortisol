@@ -4,11 +4,11 @@ library(ggpubr)
 library(nonpar)
 library(RVAideMemoire)
 
-setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data/")
 
 ## read in DEGs and check DS if available in ouputted list from Hawrylcyz 2015 paper 
-DS_all <- read_csv("data/differential_stability_tableS2_Hawrylycz2015.csv") # differential stability file from Hawrylcyz 2015 paper
-DEG <- read_csv2("supplements/differential_expression_results.csv")[,-1] # DEGs
+DS_all <- read_csv("differential_stability_tableS2_Hawrylycz2015.csv") # differential stability file from Hawrylcyz 2015 paper
+DEG <- read_csv2("differential_expression_results.csv")[,-1] # DEGs
 
 DS_DEG <- inner_join(DS_all, DEG, by = c("Gene" = "gene_symbol")) %>% 
   select(Gene, Pearson, regulation, BH_adjusted_p_value, bonferroni_p_value)
@@ -51,11 +51,6 @@ plot <- ggplot(DS_DEG, aes(x=Pearson, fill=regulation)) +
          plot.tag = element_text(size = 14))
 
 plot
-# ggsave("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/Paper Bristol/figures/raw outputs/density_plot.pdf",
-#        plot,
-#        width = 12,
-#        height = 12,
-#        units = "cm")
 
 ### metrics for top 30 DEGS (all bonferroni corrected p < 0.05) 
 # Density plot for both up and downregulated genes
@@ -84,21 +79,6 @@ ggscatter(DS_DEG, x = "BH_adjusted_p_value", y = "Pearson",
   xlab("p-value (FDR corrected)") +
   ylab("Differential Stability") +
   ggtitle("Correlation between DS and p-value in DEGs")
-
-## extra check for all p-values:
-genesALL <- read_csv("supplements/differential_expression_results_ALL.csv")
-DS_DEG_all <- inner_join(DS_all, genesALL, by = c("Gene" = "gene_symbol")) %>% 
-  select(Gene, Pearson, regulation, p_value, BH_adjusted_p_value, bonferroni_p_value)
-
-ggscatter(DS_DEG_all, x = "p_value", y = "Pearson",
-                add = "reg.line",  # Add regressin line
-                add.params = list(color = "blue", fill = "lightgray"), # Customize reg. line
-                conf.int = TRUE # Add confidence interval
-) +
-  stat_cor(method = "pearson", label.x = 0.75, label.y = 1) +
-  xlab("p-value (uncorrected)") +
-  ylab("Differential Stability") +
-  ggtitle("Correlation between DS and all calculated p-values")
 
 
  

@@ -8,16 +8,16 @@ library(plyr)
 library(DescTools)
 library(abind)
 
-setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/Paper Bristol/added_analysis")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data")
 
 #Read in DEGs
-DEG <- read_csv2("data/differential_expression_results.csv")[,-1]
+DEG <- read_csv2("differential_expression_results.csv")[,-1]
 DEG_higher <- DEG %>% dplyr::filter(regulation == "Up") #select only genes with differential higher expression
 DEG_lower <- DEG %>% dplyr::filter(regulation == "Down") #select only genes with differential lower expression
 
 ###################################################################################
 #Make list for each cell type with specified marker genes
-markerGenes <- read_xlsx("data/cortical_celltypes_collated.xlsx") %>% 
+markerGenes <- read_xlsx("cortical_celltypes_collated.xlsx") %>% 
   mutate(celltype = paste(Paper,Class, sep = "_")) %>% 
   mutate(celltype = make.unique(celltype)) %>% 
   relocate(celltype, .before = Class) %>% 
@@ -143,7 +143,7 @@ hyper.test.table <- function(l1, l2, random = NULL, unique = FALSE){ # two lists
 listDEG <- list("DEG" = as.character(DEG_higher$entrez_id))
 
 #load in probe ID.  Use reannotated probes.
-probeInfo <- read.csv2("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/AHBA/reannotatedProbes_May2020/Probes_May2020.csv", header = T, stringsAsFactors = FALSE)
+probeInfo <- read.csv2("Probes_May2020.csv", header = T, stringsAsFactors = FALSE)
 probeInfo$X <- NULL
 
 # Cell-type enrichment of DEGs
@@ -158,8 +158,7 @@ t <- t[,colOrder]
 test <- as.data.frame(t)
 test <- as.data.frame(sapply(test, function(x){format(x, digits = 3, scientific = TRUE)}, simplify = "array"))
 test$value <- rownames(t)
-
-#write.csv(test, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[wilcoxon.test]/RNAseqHodge/celltype_enrichment_>=5concatenated_singleMarkers_OR.csv")
+test
 
 # Run cell-type enrichment with hyper.test
 ct_enrichment <- hyper.test.table(listDEG, entrezlist, unique = TRUE) 
@@ -169,6 +168,5 @@ ct_enrichment$enriched <- rows
 
 sig <- function(x, n = 3){ x <- signif(x, n)}
 ct_enrichment$`p-value` <- sapply(ct_enrichment$`p-value`, sig) 
-#write.csv2(ct_enrichment, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[wilcoxon.test]/RNAseqHodge/celltype_enrichment_>=5concatenated_singleMarkers_hypergeometrictest.csv")
-
+ct_enrichment
   

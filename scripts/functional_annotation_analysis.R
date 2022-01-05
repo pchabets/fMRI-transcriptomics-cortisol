@@ -31,17 +31,8 @@ setAnnotationCategories(david, "KEGG_PATHWAY")
 # Get functional annotation chart as R object.
 FuncAnnotChart <- getFunctionalAnnotationChart(david)
 
-# Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnot_CHART_KEGG_noBackground.csv")
-
 # Get functional annotation clustering 
 FuncAnnotClust <- getClusterReport(david)
-
-# Print functional annotation clustering to file (limited to 3000 genes).
-getClusterReportFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnot_CLUSTER_KEGG_noBackground.csv")
-
-# Get functional table (for each gene the KEGG categories)
-getFunctionalAnnotationTableFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnot_TABLE_KEGG_noBackground.csv")
 
 #plotting
 plot2D(FuncAnnotClust, 1)
@@ -59,17 +50,8 @@ FuncAnnotChart <- getFunctionalAnnotationChart(david)
 #FuncAnnotChart[FuncAnnotChart$Category == "GOTERM_CC_ALL",] #GOterm Cellular Component
 #FuncAnnotChart[FuncAnnotChart$Category == "GOTERM_MF_ALL",] #GOterm Molecular Function
 
-# Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotChart_GO_ALL_noBackground.csv")
-
 # Get functional annotation clustering .
 FuncAnnotClust <- getClusterReport(david)
-
-# Print functional annotation clustering to file.
-getClusterReportFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotCLUSTER_GO_ALL_noBackground.csv")
-
-#get functional table (for each gene the GO categories)
-getFunctionalAnnotationTableFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotTABLE_GO_ALL_noBackground.csv")
 
 #plotting
 plot2D(FuncAnnotClust, 1)
@@ -87,17 +69,8 @@ setAnnotationCategories(david, "GOTERM_BP_ALL")
 # Get functional annotation chart as R object.
 FuncAnnotChart <- getFunctionalAnnotationChart(david)
 
-# Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotChart_GO_BP_noBackground.csv")
-
 # Get functional annotation clustering (limited to 3000 genes).
 FuncAnnotClust <- getClusterReport(david)
-
-# Print functional annotation clustering to file (limited to 3000 genes).
-getClusterReportFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotCLUSTER_GO_BP_noBackground.csv")
-
-#get functional table (for each gene the GO categories)
-getFunctionalAnnotationTableFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotTABLE_GO_BP_noBackground.csv")
 
 #plotting
 plot2D(FuncAnnotClust, 1)
@@ -114,14 +87,8 @@ setAnnotationCategories(david, "GOTERM_MF_ALL")
 # Get functional annotation chart as R object.
 FuncAnnotChart <- getFunctionalAnnotationChart(david)
 
-# Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotChart_GO_MF_noBackground.csv")
-
 # Get functional annotation clustering (limited to 3000 genes).
 FuncAnnotClust <- getClusterReport(david)
-
-# Print functional annotation clustering to file (limited to 3000 genes).
-getClusterReportFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotCLUSTER_GO_MF_noBackground.csv")
 
 #get functional table (for each gene the GO categories)
 getFunctionalAnnotationTableFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotTABLE_GO_MF_noBackground.csv")
@@ -141,14 +108,8 @@ setAnnotationCategories(david, "GOTERM_CC_ALL")
 # Get functional annotation chart as R object.
 FuncAnnotChart <- getFunctionalAnnotationChart(david)
 
-# Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotChart_GO_CC_noBackground.csv")
-
 # Get functional annotation clustering (limited to 3000 genes).
 FuncAnnotClust <- getClusterReport(david)
-
-# Print functional annotation clustering to file (limited to 3000 genes).
-getClusterReportFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotCLUSTER_GO_CC_noBackground.csv")
 
 #get functional table (for each gene the GO categories)
 getFunctionalAnnotationTableFile(david, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/RDAVID.wilcoxon.test/FuncAnnotTABLE_GO_CC_noBackground.csv")

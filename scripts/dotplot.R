@@ -1,15 +1,15 @@
 library(tidyverse)
 
-setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/Paper Bristol/added_analysis")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data/")
 
 # read in DEG results
-DEG <- read_csv2("data/differential_expression_results.csv")[,-1]
+DEG <- read_csv2("differential_expression_results.csv")[,-1]
 
 # read Gene Expression by Cell Type, as medians and trimmed means (source: https://portal.brain-map.org/atlases-and-data/rnaseq/human-multiple-cortical-areas-smart-seq)
-trimmed_means <- read_csv("data/trimmed_means_SMART-Seq.csv") # using SMART data multiple cortical areas
+trimmed_means <- read_csv("trimmed_means_SMART-Seq.csv") # using SMART data multiple cortical areas
 
 # There are 120 cell types, and one nameless column that will be deleted here
-meta <- read_csv("data/metadata_SMART-Seq.csv")
+meta <- read_csv("metadata_SMART-Seq.csv")
 # meta %>% 
 #   filter(!cluster_label %in% colnames(trimmed_means)[-1]) %>% 
 #   View() # inspect outlier cells
@@ -121,10 +121,10 @@ dp + annotation_custom(ggplotGrob(leg),
 # save dp as TIFF image with 2500 x 850 resolution for dotplot of MCODE cluster genes, 2880x1800 for top50. 
 
 # celltypes with average highest expression of DEGs
-test <- trimmed_means %>% 
+HE <- trimmed_means %>% 
   filter(feature %in% (as_vector(DEG %>% filter(regulation == "Up") %>% select(gene_symbol))))
 
-celltype_DEG_means <- sort(apply(test[,-1], 2, mean), decreasing = T)
+celltype_DEG_means <- sort(apply(HE[,-1], 2, mean), decreasing = T)
 
 
 
