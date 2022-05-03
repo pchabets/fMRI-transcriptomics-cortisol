@@ -1,12 +1,11 @@
 library(tidyverse)
 library(plotly)
 
-setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data")
+setwd("/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data")
 
-## read in celltype enrichment for higher and lower DEGs
-cells_high <- read_csv2("celltype_enrichment_higherDEGs.csv") %>% 
-  dplyr::rename(celltype = X1, DEG = enriched) %>% 
-  mutate(cellgroup = str_replace(celltype, "(?s) .*", "")) %>% 
+## read in cell_type enrichment for higher and lower DEGs
+cells_high <- read_csv("cell_type_enrichment_higherDEGs.csv")%>% 
+  mutate(cellgroup = str_replace(cell_type, "(?s) .*", "")) %>% 
   mutate(cellgroup = recode(cellgroup, Inh = "GABAergic", 
          Exc = "Glutamatergic", 
          Astro = "Astrocyte", 
@@ -14,9 +13,8 @@ cells_high <- read_csv2("celltype_enrichment_higherDEGs.csv") %>%
          Micro = "Microglial", 
          Endo = "Endothelial"))
            
-cells_low <- read_csv2("celltype_enrichment_lowerDEGs.csv") %>% 
-  dplyr::rename(celltype = X1, DEG = enriched) %>% 
-  mutate(cellgroup = str_replace(celltype, "(?s) .*", "")) %>% 
+cells_low <- read_csv("cell_type_enrichment_lowerDEGs.csv") %>% 
+  mutate(cellgroup = str_replace(cell_type, "(?s) .*", "")) %>% 
   mutate(cellgroup = recode(cellgroup, Inh = "GABAergic", 
                             Exc = "Glutamatergic", 
                             Astro = "Astrocyte", 
@@ -32,15 +30,15 @@ add_newlines <- function(x) {
   newLine
   }
 
-cells_all <- inner_join(cells_high, cells_low, by = "celltype", suffix = c(" higher", " lower")) %>%
-  pivot_longer(cols = c(`DEG higher`, `DEG lower`), names_to = "higher_lower", values_to = "enriched") %>%
-  mutate(label = ifelse(enriched, sapply(celltype, add_newlines), ""))
+cells_all <- inner_join(cells_high, cells_low, by = "cell_type", suffix = c(" higher", " lower")) %>%
+  pivot_longer(cols = c(`enriched higher`, `enriched lower`), names_to = "higher_lower", values_to = "enriched") %>%
+  mutate(label = ifelse(enriched, sapply(cell_type, add_newlines), ""))
 
 # plot
 # colors <- RColorBrewer::brewer.pal(n=9, name = "PiYG")[c(1,7)] 
 colors <- RColorBrewer::brewer.pal(n=9, name = "Blues")[c(2,8)] 
 
-hm <-  ggplot(cells_all, aes(celltype, higher_lower, fill= enriched)) + 
+hm <-  ggplot(cells_all, aes(cell_type, higher_lower, fill= enriched)) + 
   geom_tile() +
   geom_text(aes(label = label), size = 2.5, angle = 90, nudge_y = 0.035, nudge_x =-2) +
   scale_fill_manual(values = colors, 
@@ -56,10 +54,10 @@ hm <-  ggplot(cells_all, aes(celltype, higher_lower, fill= enriched)) +
         axis.title.y = element_blank()) +
   coord_fixed(8)
 hm
-# ggplotly(hm, tooltip="celltype") #interactive plot
+# ggplotly(hm, tooltip="cell_type") #interactive plot
 
 # Build a legend bar
-leg <- ggplot(cells_all, aes(x = celltype, y = 0)) + 
+leg <- ggplot(cells_all, aes(x = cell_type, y = 0)) + 
   geom_point(aes(color = `cellgroup higher`), shape = 15, size = 3, show.legend = T) + 
   theme_classic() + 
   theme(axis.title = element_blank(), axis.line = element_blank(), 
@@ -71,10 +69,18 @@ leg <- ggplot(cells_all, aes(x = celltype, y = 0)) +
 # leg
 
 # annotate heatmap with bar
-hm + annotation_custom(ggplotGrob(leg), 
+annot_hm <- hm + annotation_custom(ggplotGrob(leg), 
                        xmin = 0, xmax = 70.5,
                        ymin = 0, ymax = 0.5)
+annot_hm
 
+# # save to pdf
+# ggsave("/Users/philippehabets/Dropbox (Personal)/Endo/fMRI.transcriptomics/Paper Bristol/eNeuro/Revision/figures_tables_supplements_v2/raw outputs/annot_hm.pdf",
+#        annot_hm,
+#        width = 22,
+#        height = 12,
+#        units = "cm")
+# 
 
 
 

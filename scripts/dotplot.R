@@ -41,13 +41,13 @@ cellTypes <- colnames(trimmed_means)[-1]
 # select differentially higher expressed receptors of interest, other genes of interest, and top10 genes to inspect
 geneSelection <- DEG %>% 
   
-  ## for MCODE cluster genes (genes in top 3 PPI clusters):
-  # filter(gene_symbol %in% c("NPY", "OPRK1", "SST", "CXCL2", "GNF4", "ANXA1", "GNB2", "PTGER3", "GNB4", "ADRA1B", "OPN4", "TRH", "RTN4RL2", "NTNG2", "NRN1L", "FOLR2", "CD52")) %>%
-  
+  # for MCODE cluster genes (genes in top 3 PPI clusters):
+  filter(gene_symbol %in% c("OPRK1","PTGER3","NPY", "ANXA1", "SST", "CXCL2", "GNG2", "GNAO1", "ADRA1B", "GNG4", "GNB4", "PIK3CG", "GNB2")) %>%
+
   ## for top-n genes:
-  filter(regulation == "Up") %>%
-  filter(gene_symbol %in% gene_symbol[1:50]) %>%
-  
+  # filter(regulation == "Up") %>%
+  # filter(gene_symbol %in% gene_symbol[1:50]) %>%
+
   select(gene_symbol, gene_name)
 
 # make dataframe for plotting
@@ -84,17 +84,17 @@ dp <- means_geneSelection %>%
   scale_y_discrete(limits = rev(orderGenes)) +
   cowplot::theme_cowplot() + 
   theme(axis.line  = element_blank()) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + #for top-50 plotting
-  # theme(axis.text.x = element_blank()) + #for MCODE gene plotting
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + #for top-50 plotting
+  theme(axis.text.x = element_blank()) + #for MCODE gene plotting
   ylab('') +
   xlab('') +
   theme(axis.ticks = element_blank(),
-        # plot.margin = unit(c(5,0,5,0), "cm"), # for MCODE gene plotting
-        plot.margin = unit(c(0,0,0,0), "cm"), # for top-50 gene plottings
+        plot.margin = unit(c(1,0,7,0), "cm"), # for MCODE gene plotting
+        # plot.margin = unit(c(0,0,5,0), "cm"), # for top-50 gene plotting
         legend.key.size = unit(1, "cm"),
-        legend.title = element_text(size=15), # 20 for MCODE gene plotting, 15 for top-50 plotting
-        legend.text = element_text(size=15),
-        axis.text.y = element_text(size=15))
+        legend.title = element_text(size=25), # 25 for MCODE gene plotting, 15 for top-50 plotting
+        legend.text = element_text(size=20),
+        axis.text.y = element_text(size=20))
 dp
 # save dp as TIFF image with 2880x1800 resolution for top50.
 
@@ -111,14 +111,31 @@ leg <- ggplot(means_geneSelection, aes(x = cell_type, y = 0)) +
         legend.title = element_text(size=20),
         legend.text = element_text(size=20)) +
   guides(color=guide_legend(title = "cell type"))
-# leg
+leg
 
 # annotate heatmap with bar
-dp + annotation_custom(ggplotGrob(leg), 
-                       xmin = 0, xmax = 120.5, #121.5 for SMART, 127.5 for M1
+dotplot <- dp + annotation_custom(ggplotGrob(leg), 
+                       xmin = 0, xmax = 121.5, #121.5 for SMART, 127.5 for M1
                        ymin = 0, ymax = 0.5)
 
+dotplot
+
 # save dp as TIFF image with 2500 x 850 resolution for dotplot of MCODE cluster genes, 2880x1800 for top50. 
+
+# # save to pdf top50
+# ggsave("/Users/philippehabets/Dropbox (Personal)/Endo/fMRI.transcriptomics/Paper Bristol/eNeuro/Revision/figures_tables_supplements_v2/raw outputs/dotplot_top50.pdf",
+#        dotplot,
+#        width = 80,
+#        height = 50,
+#        units = "cm")
+
+# # save to pdf MCODE
+# ggsave("/Users/philippehabets/Dropbox (Personal)/Endo/fMRI.transcriptomics/Paper Bristol/eNeuro/Revision/figures_tables_supplements_v2/raw outputs/dotplot_MCODE.pdf",
+#        dotplot,
+#        width = 80,
+#        height = 25,
+#        units = "cm")
+
 
 # celltypes with average highest expression of DEGs
 HE <- trimmed_means %>% 

@@ -1,6 +1,6 @@
 library(readxl)
 library(readr)
-library(dplyr)
+library(tidyverse)
 library(org.Hs.eg.db)
 library(EnsDb.Hsapiens.v86)
 library(reshape2)
@@ -48,7 +48,7 @@ rows <- which(DEG_higher$gene_symbol %in% c(selectivelyExpressedMarkers$selectiv
                                             selectivelyExpressedMarkers$selectively_expresses...18))
 
 View(DEG_higher[rows,]) #view these genes
-#write.csv(DEG_higher[rows,], "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[wilcoxon.test]/RNAseqHodge/DEGenes_selectively_expressed_by_some_celltype.csv")
+# write.csv(DEG_higher[rows,], "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[limma]/RNAseqHodge/DEGenes_selectively_expressed_by_some_celltype.csv")
 
 
 #check cell types
@@ -85,7 +85,7 @@ overlappingMarkers <- selectivelyExpressedMarkers[celltypes,] %>%
   mutate(selectively_expresses...17 = if_else(selectively_expresses...17 %in% DEG_higher[rows,][,1], paste0(selectively_expresses...17, "*"), selectively_expresses...17)) %>%
   mutate(selectively_expresses...18 = if_else(selectively_expresses...18 %in% DEG_higher[rows,][,1], paste0(selectively_expresses...18, "*"), selectively_expresses...18))
 
-#write.csv(overlappingMarkers, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[wilcoxon.test]/RNAseqHodge/overlappingProvisionalCelltypeMarkers.csv")
+# write.csv(overlappingMarkers, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/celltypes[limma]/RNAseqHodge/overlappingProvisionalCelltypeMarkers.csv")
 
 
 ###################################################################################
@@ -260,5 +260,16 @@ ct_enrichment$enriched <- rows
 
 sig <- function(x, n = 3){ x <- signif(x, n)}
 ct_enrichment$`p-value` <- sapply(ct_enrichment$`p-value`, sig) 
-ct_enrichment
-  
+ct_enrichment <- ct_enrichment %>% 
+  mutate(cell_type = rownames(ct_enrichment)) %>% 
+  relocate(cell_type, .before=1)
+
+# write_csv(ct_enrichment, '/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data/celltype_enrichment_higherDEGs.csv')
+# write_csv(ct_enrichment, '/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data/celltype_enrichment_lowerDEGs.csv')
+
+
+
+
+
+
+

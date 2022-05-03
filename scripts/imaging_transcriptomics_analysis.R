@@ -12,6 +12,7 @@ library(reshape2)
 library(ggsignif)
 library(RColorBrewer)
 library(boot)
+library(limma)
 
 setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/")
 
@@ -147,7 +148,6 @@ dnrAB$donor <- as.factor(dnrAB$donor)
 ##Step 3: select samples from step 2 that are included in parcellations from Desikan cortical brainparcellations
 #########################################################################################################
 ##read in  "samples.coordinates" and "exprLimmaSRS" (created and exported as RDS from normalizing_expression+comparing_options_tSNE.R) 
-
 dfGE <- readRDS("Bristol_study_ultradian_rhythm/Output/withinSampleNormalization/exprLimmaSRS.RDS") 
 samples.coordinates <- readRDS("Bristol_study_ultradian_rhythm/Output/withinSampleNormalization/samples.coordinates.RDS")
 
@@ -200,12 +200,14 @@ sampleTable <- sampleTable[c(2,4),] %>%
 
 ##Make 2 df's: A -> selected case samples x GE ; B -> selected control samples x GE
 A <- dfGE %>% 
-  inner_join(y = (dplyr::select(affectedAB, sample)), by = "sample") %>% 
-  dplyr::select(-c(1:2))
+  inner_join(y = (dplyr::select(affectedAB, sample)), by = "sample") 
+donorsA <- A$donor
+A <- A %>% dplyr::select(-c(1:2))
 
 B <- dfGE %>% 
-  inner_join(y = (dplyr::select(unaffectedSamples, sample)), by = "sample") %>% 
-  dplyr::select(-c(1:2))
+  inner_join(y = (dplyr::select(unaffectedSamples, sample)), by = "sample") 
+donorsB <- B$donor
+B <- B %>% dplyr::select(-c(1:2))
 
 #clear working memory
 dfGE <- NULL; dnr <- NULL; dnrAB <- NULL; effectedAB <- NULL; uneffectedSamples <- NULL; m <- NULL; dnrAlB <- NULL
@@ -216,22 +218,55 @@ dnrM <- NULL; effectedAorB <- NULL; L <- NULL; LB <- NULL ; M <- NULL; MB <- NUL
 ##Step 5: perform differential gene expression analysis on A vs B
 #########################################################################################################
 
-dfT <- data.frame("probe_id" = character(), "p_value" = numeric(), "regulation" = character(), stringsAsFactors = FALSE)
-for(i in c(1:ncol(A))){
-  #t <- t.test(A[,i], B[,i]) ## Welch t-test is used by default.
-  t <- wilcox.test(A[,i], B[,i])
-  r <- 1 #1 means upregulated (or to be precise: on average higher expressed)
-  if(mean(A[,i]) < mean(B[,i])){ r <- 0} #0 means downregulated (or to be precies: on average lower expressed)
-  dfT <- rbind(dfT, c(as.numeric(colnames(A)[i]), t$p.value, as.numeric(r)), stringsAsFactors = FALSE)
-  colnames(dfT) <- c("probe_id", "p_value", "regulation")
-}
-dfT$probe_id <- as.character(dfT$probe_id)
-dfT$regulation[dfT$regulation == 1] <- "Up"
-dfT$regulation[dfT$regulation == 0] <- "Down"
-qqnorm(dfT$p_value); qqline(dfT$p_value) #check distribution of p-values
+## This was method originally used, but changed to Limma analysis (see below) by suggestion of the reviewer
+# dfT <- data.frame("probe_id" = character(), "p_value" = numeric(), "regulation" = character(), stringsAsFactors = FALSE)
+# for(i in c(1:ncol(A))){
+#   #t <- t.test(A[,i], B[,i]) ## Welch t-test is used by default.
+# t <- wilcox.test(A[,i], B[,i])
+#   r <- 1 #1 means upregulated (or to be precise: on average higher expressed)
+#   if(mean(A[,i]) < mean(B[,i])){ r <- 0} #0 means downregulated (or to be precise: on average lower expressed)
+#   dfT <- rbind(dfT, c(as.numeric(colnames(A)[i]), t$p.value, as.numeric(r)), stringsAsFactors = FALSE)
+#   colnames(dfT) <- c("probe_id", "p_value", "regulation")
+# }
+# dfT$probe_id <- as.character(dfT$probe_id)
+# dfT$regulation[dfT$regulation == 1] <- "Up"
+# dfT$regulation[dfT$regulation == 0] <- "Down"
+# qqnorm(dfT$p_value); qqline(dfT$p_value) #check distribution of p-values
+# 
+# dfT$BH_adjusted_p_value <- p.adjust(dfT$p_value, method = 'BH')
+# dfT$bonferroni_p_value <- p.adjust(dfT$p_value, method = "bonferroni")
 
-dfT$BH_adjusted_p_value <- p.adjust(dfT$p_value, method = 'BH')
-dfT$bonferroni_p_value <- p.adjust(dfT$p_value, method = "bonferroni")
+## Adjusted code with Limma:
+##################################################################################################################################################################################################################
+AB_matrix <- bind_rows(
+  A %>% mutate(case = rep('case', nrow(A)), .before=1) , 
+  B %>% mutate(case = rep('control', nrow(B)), .before=1)) %>% 
+  mutate(case = factor(case, levels = c('control', 'case'))) # so control will be '0' and case '1' in the design matrix
+
+design <- model.matrix(~case, data = AB_matrix)
+
+# transpose because Limma wants rows as genes and columns as samples
+tAB <- t(AB_matrix %>% select(-case))
+block <- c(donorsA, donorsB)
+
+dupcor <- duplicateCorrelation(object = tAB,design = design,block=block)
+dupcor$consensus.correlation
+
+fit <- lmFit(tAB,design,block=block,correlation=dupcor$consensus.correlation)
+fit <- eBayes(fit)
+
+limmaDF <- as.data.frame(topTable(fit, number=nrow(tAB))) 
+limmaDF <- limmaDF %>% 
+  mutate(probe_id = as.numeric(rownames(limmaDF)),.before=1)
+
+dfT <- limmaDF %>% 
+  # also note that logFC is not correct, as the input measures were no log values but normalized and unit interval scaled values
+  mutate(regulation = ifelse(logFC > 0, "Up", "Down")) %>% 
+  mutate(BH_adjusted_p_value = p.adjust(P.Value, method = 'BH')) %>% 
+  mutate(bonferroni_p_value = p.adjust(P.Value, method = 'bonferroni')) %>% 
+  select(probe_id, P.Value, regulation, BH_adjusted_p_value, bonferroni_p_value) %>% 
+  dplyr::rename(p_value = P.Value)
+##################################################################################################################################################################################################################
 
 ##look at top genes(normal, BH and Bonferroni)
 genes <- dfT[dfT$p_value<= 0.05,]
@@ -263,6 +298,9 @@ genesBH <- genesBH %>% dplyr::select(gene_symbol, gene_name, regulation, entrez_
 genesBonf$probe_id <- as.numeric(genesBonf$probe_id)
 genesBonf <- inner_join(genesBonf, probeInfo)
 genesBonf <- genesBonf %>% dplyr::select(gene_symbol, gene_name, regulation, entrez_id, p_value, BH_adjusted_p_value, bonferroni_p_value, everything())
+
+# write_csv(genesALL, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/limma_based_DE_analysis/R_ALL_genes_BH_4A&4B(RNAseq_signal=0.5_withinSample=TRUE_LIMMA).csv")
+# write.csv2(genesBH, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/limma_based_DE_analysis/R_308genes_BH_4A&4B(RNAseq_signal=0.5_withinSample=TRUE_LIMMA).csv")
 
 # write_csv(genesALL, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/Wilcox_RankTest/limma+SRS_Normalized/R_ALL_genes_BH_4A&4B(RNAseq_signal=0.5_withinSample=TRUE).csv")
 # write.csv2(genesBH, "/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/Bristol_study_ultradian_rhythm/Output/Wilcox_RankTest/limma+SRS_Normalized/R_308genes_BH_4A&4B(RNAseq_signal=0.5_withinSample=TRUE).csv")

@@ -82,7 +82,7 @@ rownames(log2Expression.transposed) <- c(1:nrow(log2Expression.transposed))
 ############################################################################################################
 ###WITHIN SAMPLE NORMALIZE EXPRESSION LEVELS################################################################
 ############################################################################################################
-##for each sample, use SRS normalizaton to normalize within-sample (meaning normalize samples across genes)
+##for each sample, use SRS normalization to normalize within-sample (meaning normalize samples across genes)
 norm_withinSample_SRS <- list()
 for(i in 1:length(donorNames)){
   norm_withinSample_SRS[[i]] <- log2Expression %>% select_at(vars(probe_id, contains(donorNames[i])))
@@ -147,7 +147,7 @@ rownames(log2Expression_RmBE.transposed) <- c(1:nrow(log2Expression_RmBE.transpo
 ##scaled robust sigmoid (SRS) normalization of log expression values after Limma batch correction directly on 1285 
 ##samples, for each donor individually. Some genes might return NaN because of SRS on within-sample-SRS-normalized values.
 ##Functions: xy = 1/(1+exp(-(xi - median of x)/(IQR/1.35))) ("robust sigmoidal" function)
-##    than : xnorm = (xi - min(x))/(max(x) - min(x)) (scaling to unit interval 0-1)
+##    then : xnorm = (xi - min(x))/(max(x) - min(x)) (scaling to unit interval 0-1)
 ############################################################################################################
 ############################################################################################################
 exprLimmaSRS <- list()
