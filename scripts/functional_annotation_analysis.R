@@ -3,7 +3,7 @@ library(dplyr)
 Sys.setenv(JAVA_HOME= "/usr/bin/java") #set java environment
 library(RDAVIDWebService)
 
-david<-DAVIDWebService(email="p.c.habets@lumc.nl", url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+david<-DAVIDWebService$new(email="p.c.habets@lumc.nl", url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
 david
 
 path_DEG <- file.choose() #choose outputted differential gene expression list

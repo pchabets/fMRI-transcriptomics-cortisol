@@ -1,0 +1,7 @@
+disease,p-value,enriched
+ASD,7.2e-9,TRUE
+SCZ,0.348,FALSE
+BD,7.2e-9,TRUE
+MDD,1,FALSE
+AAD,0.0397,TRUE
+ALL,1,FALSE

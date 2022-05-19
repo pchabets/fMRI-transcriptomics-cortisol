@@ -231,7 +231,7 @@ hyper.test.table <- function(l1, l2, random = NULL, unique = FALSE){ # two lists
 }
 ######################################################################################################################################################
 ######################################################################################################################################################
-# get 226 BH-corrected higher expressed DEG in list like markerlist6
+# get 223 BH-corrected higher expressed DEG in list like markerlist6
 listDEG <- list("DEG" = as.character(DEG_higher$entrez_id))
 
 #load in probe ID.  Use reannotated probes.
