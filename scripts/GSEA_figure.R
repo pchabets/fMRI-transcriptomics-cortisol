@@ -1,10 +1,11 @@
 library(tidyverse)
 
-setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data")
+setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data/")
+
 
 # read in GSEA results
-KEGG <- read_csv("Table.S3.csv")
-GO <- read_csv("Table.S2.csv")
+KEGG <- read_csv("Table.S4.csv")
+GO <- read_csv("Table.S3.csv")
 
 ## clean data for plotting ##
 #KEGG
