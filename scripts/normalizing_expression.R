@@ -39,7 +39,7 @@ dnr[which(duplicated(dnr[,11:13])), 11:13] %>% inner_join(dnr) #-> donor12876_sa
 setwd("/Users/philippehabets/Dropbox/Endo/fMRI.transcriptomics/data/AHBA/MatlabOutput_14-10-2020")
 
 ##read in included samples in all 34 parcellations, match to sample coordinates 
-matlab.output.directory <- file.choose() 
+matlab.output.directory <- file.choose() # ROIxGene_aparcaseg_RNAseq_signal=0.5_unnormalisedLog2Values.mat
 matlab.output <- readMat(matlab.output.directory)
 
 samples.coordinates <- as.data.frame(matlab.output[[5]]) #1285 samples

@@ -34,7 +34,7 @@ getAllAnnotationCategoryNames(david)
 setAnnotationCategories(david, c("GOTERM_BP_ALL", "GOTERM_MF_ALL", "GOTERM_CC_ALL"))
 
 # Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data/Table.S2.csv")
+getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data/Table.S3.csv")
 
 # Get functional annotation clustering .
 FuncAnnotClust <- getClusterReport(david)
@@ -54,7 +54,7 @@ plot2D(FuncAnnotClust, 4)
 setAnnotationCategories(david, "KEGG_PATHWAY")
 
 # Print functional annotation chart to file.
-getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data/Table.S3.csv")
+getFunctionalAnnotationChartFile(david, "/Users/philippehabets/Dropbox (Personal)/Git/fMRI-transcriptomics-cortisol/data/Table.S4.csv")
 
 # Get functional annotation clustering 
 FuncAnnotClust <- getClusterReport(david)
