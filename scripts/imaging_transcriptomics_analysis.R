@@ -218,25 +218,7 @@ dnrM <- NULL; effectedAorB <- NULL; L <- NULL; LB <- NULL ; M <- NULL; MB <- NUL
 ##Step 5: perform differential gene expression analysis on A vs B
 #########################################################################################################
 
-## This was method originally used, but changed to Limma analysis (see below) by suggestion of the reviewer
-# dfT <- data.frame("probe_id" = character(), "p_value" = numeric(), "regulation" = character(), stringsAsFactors = FALSE)
-# for(i in c(1:ncol(A))){
-#   #t <- t.test(A[,i], B[,i]) ## Welch t-test is used by default.
-# t <- wilcox.test(A[,i], B[,i])
-#   r <- 1 #1 means upregulated (or to be precise: on average higher expressed)
-#   if(mean(A[,i]) < mean(B[,i])){ r <- 0} #0 means downregulated (or to be precise: on average lower expressed)
-#   dfT <- rbind(dfT, c(as.numeric(colnames(A)[i]), t$p.value, as.numeric(r)), stringsAsFactors = FALSE)
-#   colnames(dfT) <- c("probe_id", "p_value", "regulation")
-# }
-# dfT$probe_id <- as.character(dfT$probe_id)
-# dfT$regulation[dfT$regulation == 1] <- "Up"
-# dfT$regulation[dfT$regulation == 0] <- "Down"
-# qqnorm(dfT$p_value); qqline(dfT$p_value) #check distribution of p-values
-# 
-# dfT$BH_adjusted_p_value <- p.adjust(dfT$p_value, method = 'BH')
-# dfT$bonferroni_p_value <- p.adjust(dfT$p_value, method = "bonferroni")
-
-## Adjusted code with Limma:
+## Using Limma (with Mixed Linear Model approach including Donor terms):
 ##################################################################################################################################################################################################################
 AB_matrix <- bind_rows(
   A %>% mutate(case = rep('case', nrow(A)), .before=1) , 
@@ -266,6 +248,7 @@ dfT <- limmaDF %>%
   mutate(bonferroni_p_value = p.adjust(P.Value, method = 'bonferroni')) %>% 
   select(probe_id, P.Value, regulation, BH_adjusted_p_value, bonferroni_p_value) %>% 
   dplyr::rename(p_value = P.Value)
+
 ##################################################################################################################################################################################################################
 
 ##look at top genes(normal, BH and Bonferroni)

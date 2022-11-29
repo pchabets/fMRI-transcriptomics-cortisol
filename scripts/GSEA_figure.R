@@ -1,6 +1,6 @@
 library(tidyverse)
 
-setwd("/Users/philippehabets/Dropbox/Git/fMRI-transcriptomics-cortisol/data/")
+setwd("/Users/philippehabets/Git/fMRI-transcriptomics-cortisol/data/")
 
 
 # read in GSEA results
